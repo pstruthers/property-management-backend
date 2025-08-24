@@ -1,30 +1,36 @@
-# Base image with Apache and PHP 8.2
+# Use official PHP with Apache
 FROM php:8.2-apache
 
-# Install PHP extensions needed by CakePHP
+# Install system dependencies & PHP extensions
 RUN apt-get update && apt-get install -y \
-    libicu-dev \
-    libzip-dev \
-    unzip \
-    git \
-  && docker-php-ext-install pdo_mysql intl mbstring \
-  && docker-php-ext-enable intl
+  git \
+  unzip \
+  libicu-dev \
+  libzip-dev \
+  libonig-dev \
+  zip \
+  && docker-php-ext-install \
+  pdo_mysql \
+  intl \
+  mbstring \
+  zip \
+  && docker-php-ext-enable intl mbstring zip
 
-# Enable Apache rewrite module
+# Enable Apache mod_rewrite for CakePHP
 RUN a2enmod rewrite
 
-# Copy application code
-COPY . /var/www/html
+# Copy project files
+WORKDIR /var/www/html
+COPY . .
 
-# Install Composer for dependencies
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set permissions for tmp and logs
-RUN chown -R www-data:www-data /var/www/html/tmp /var/www/html/logs
-
-# Expose default HTTP port
+# Apache will serve app
 EXPOSE 80
 
-# Start Apache server
+# Use Apache’s default entrypoint
 CMD ["apache2-foreground"]
