@@ -78,11 +78,10 @@ class PropertiesController extends AppController
         }
 
         // Handle nested address object
-        $addressData = $this->request->getData('address');
-        $property->address = $addressData['address'] ?? '';
-        $property->city    = $addressData['city'] ?? '';
-        $property->state   = $addressData['state'] ?? '';
-        $property->zip     = $addressData['zip'] ?? '';
+        $property->address = $this->request->getData('address.address') ?? '';
+        $property->city    = $this->request->getData('address.city') ?? '';
+        $property->state   = $this->request->getData('address.state') ?? '';
+        $property->zip     = $this->request->getData('address.zip') ?? '';
 
         // Other property fields
         $property->beds  = $this->request->getData('beds') ?? null;
