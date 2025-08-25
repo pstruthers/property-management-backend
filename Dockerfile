@@ -22,7 +22,7 @@ RUN a2enmod rewrite
 # Copy project files
 WORKDIR /var/www/html
 # Create uploads folder
-RUN mkdir -p /var/www/html/uploads \
+RUN mkdir -p /var/www/html/webroot/uploads \
     && chown -R www-data:www-data /var/www/html/uploads \
     && chmod -R 755 /var/www/html/uploads
 COPY . .
