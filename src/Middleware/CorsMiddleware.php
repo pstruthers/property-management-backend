@@ -13,7 +13,7 @@ class CorsMiddleware implements MiddlewareInterface
 {
     private string $origin;
 
-    public function __construct(string $origin = '*')
+    public function __construct(string $origin = 'https://property-management-frontend-n36m.onrender.com')
     {
         $this->origin = $origin;
     }
