@@ -96,26 +96,33 @@ class PropertiesController extends AppController
     {
         $this->request->allowMethod(['get']);
 
-        // Disable CakePHP template rendering
+        // Disable normal template rendering
         $this->viewBuilder()->disableAutoLayout();
+
+        // Use JsonView
         $this->viewBuilder()->setClassName('Json');
 
         try {
             $connection = $this->getTableLocator()->get('Properties')->getConnection();
             $connection->execute('SELECT 1');
 
+            // Set variables for JSON output
             $this->set([
                 'success' => true,
-                '_serialize' => ['success']
+                'error' => null,
             ]);
+
+            // Explicitly serialize for JSON output
+            $this->viewBuilder()->setOption('serialize', ['success', 'error']);
         } catch (\Exception $e) {
             $this->set([
                 'success' => false,
                 'error' => $e->getMessage(),
-                '_serialize' => ['success', 'error']
             ]);
+            $this->viewBuilder()->setOption('serialize', ['success', 'error']);
         }
     }
+
 
 
 
