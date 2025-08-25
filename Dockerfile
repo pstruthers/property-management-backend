@@ -22,11 +22,11 @@ RUN a2enmod rewrite
 # Copy project files
 WORKDIR /var/www/html
 # Create uploads folder
+COPY . .
+COPY certs /var/www/html/certs
 RUN mkdir -p /var/www/html/webroot/uploads \
     && chown -R www-data:www-data /var/www/html/webroot/uploads \
     && chmod -R 755 /var/www/html/webroot/uploads
-COPY . .
-COPY certs /var/www/html/certs
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
