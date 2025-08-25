@@ -22,6 +22,7 @@ RUN a2enmod rewrite
 # Copy project files
 WORKDIR /var/www/html
 COPY . .
+COPY certs /var/www/html/certs
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
