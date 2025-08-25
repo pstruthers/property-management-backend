@@ -52,46 +52,55 @@ class PropertiesController extends AppController
     public function add()
     {
         $this->request->allowMethod(['post']);
+
+        // Disable view/template rendering
         $this->viewBuilder()->disableAutoLayout();
         $this->viewBuilder()->setClassName('Json');
 
-        try {
-            $property = $this->Properties->newEmptyEntity();
+        $property = $this->Properties->newEmptyEntity();
 
-            $photo = $this->request->getData('photo');
-            if ($photo && $photo->getClientFilename()) {
-                // Temporarily store a placeholder to avoid container filesystem issues
-                //$filename = uniqid() . '_' . $photo->getClientFilename();
-                //$targetPath = WWW_ROOT . 'uploads' . DS . $filename;
-                //$photo->moveTo($targetPath);
-                $property->photo = 'placeholder.jpg';
+        // Handle uploaded photo
+        $photo = $this->request->getData('photo');
+        if ($photo && $photo->getClientFilename()) {
+            $filename = uniqid() . '_' . $photo->getClientFilename();
+            $targetPath = WWW_ROOT . 'uploads' . DS . $filename;
+            try {
+                $photo->moveTo($targetPath);
+                $property->photo = $filename;
+            } catch (\Exception $e) {
+                return $this->response
+                    ->withType('application/json')
+                    ->withStringBody(json_encode([
+                        'success' => false,
+                        'error' => 'Failed to upload photo: ' . $e->getMessage()
+                    ]));
             }
+        }
 
-            $property->address = $this->request->getData('address') ?? '';
-            $property->city = $this->request->getData('city') ?? '';
-            $property->state = $this->request->getData('state') ?? '';
-            $property->zip = $this->request->getData('zip') ?? '';
+        // Handle nested address object
+        $addressData = $this->request->getData('address');
+        $property->address = $addressData['address'] ?? '';
+        $property->city    = $addressData['city'] ?? '';
+        $property->state   = $addressData['state'] ?? '';
+        $property->zip     = $addressData['zip'] ?? '';
 
-            $property->beds = $this->request->getData('beds');
-            $property->baths = $this->request->getData('baths');
-            $property->sqft = $this->request->getData('sqft');
-            $property->price = $this->request->getData('price');
+        // Other property fields
+        $property->beds  = $this->request->getData('beds') ?? null;
+        $property->baths = $this->request->getData('baths') ?? null;
+        $property->sqft  = $this->request->getData('sqft') ?? null;
+        $property->price = $this->request->getData('price') ?? null;
 
-            if ($this->Properties->save($property)) {
-                $response = [
-                    'success' => true,
-                    'property' => $property
-                ];
-            } else {
-                $response = [
-                    'success' => false,
-                    'errors' => $property->getErrors()
-                ];
-            }
-        } catch (\Exception $e) {
+        // Attempt to save
+        if ($this->Properties->save($property)) {
+            $response = [
+                'success'  => true,
+                'property' => $property
+            ];
+        } else {
+            $errors = $property->getErrors();
             $response = [
                 'success' => false,
-                'error' => $e->getMessage()
+                'errors'  => $errors
             ];
         }
 
@@ -99,6 +108,7 @@ class PropertiesController extends AppController
             ->withType('application/json')
             ->withStringBody(json_encode($response));
     }
+
 
 
     /**
