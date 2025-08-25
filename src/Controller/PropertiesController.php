@@ -96,27 +96,27 @@ class PropertiesController extends AppController
     {
         $this->request->allowMethod(['get']);
 
-        try {
-            $conn = $this->Properties->getConnection();
-            $results = $conn->execute('SHOW TABLES')->fetchAll('assoc');
+        // Disable CakePHP template rendering
+        $this->viewBuilder()->disableAutoLayout();
+        $this->viewBuilder()->setClassName('Json');
 
-            // Show tables in JSON
-            $this->viewBuilder()->disableAutoLayout();
-            $this->viewBuilder()->setClassName('Json');
+        try {
+            $connection = $this->getTableLocator()->get('Properties')->getConnection();
+            $connection->execute('SELECT 1');
+
             $this->set([
-                'tables' => $results,
-                '_serialize' => ['tables']
+                'success' => true,
+                '_serialize' => ['success']
             ]);
         } catch (\Exception $e) {
-            // Show the actual error in JSON
-            $this->viewBuilder()->disableAutoLayout();
-            $this->viewBuilder()->setClassName('Json');
             $this->set([
+                'success' => false,
                 'error' => $e->getMessage(),
-                '_serialize' => ['error']
+                '_serialize' => ['success', 'error']
             ]);
         }
     }
+
 
 
     /**
