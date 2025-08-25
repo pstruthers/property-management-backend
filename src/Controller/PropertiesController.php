@@ -92,21 +92,32 @@ class PropertiesController extends AppController
         return $this->response;
     }
 
+    public function testDb()
+    {
+        $this->request->allowMethod(['get']);
 
-    // public function add()
-    // {
-    //     $property = $this->Properties->newEmptyEntity();
-    //     if ($this->request->is('post')) {
-    //         $property = $this->Properties->patchEntity($property, $this->request->getData());
-    //         if ($this->Properties->save($property)) {
-    //             $this->Flash->success(__('The property has been saved.'));
+        try {
+            $conn = $this->Properties->getConnection();
+            $results = $conn->execute('SHOW TABLES')->fetchAll('assoc');
 
-    //             return $this->redirect(['action' => 'index']);
-    //         }
-    //         $this->Flash->error(__('The property could not be saved. Please, try again.'));
-    //     }
-    //     $this->set(compact('property'));
-    // }
+            // Show tables in JSON
+            $this->viewBuilder()->disableAutoLayout();
+            $this->viewBuilder()->setClassName('Json');
+            $this->set([
+                'tables' => $results,
+                '_serialize' => ['tables']
+            ]);
+        } catch (\Exception $e) {
+            // Show the actual error in JSON
+            $this->viewBuilder()->disableAutoLayout();
+            $this->viewBuilder()->setClassName('Json');
+            $this->set([
+                'error' => $e->getMessage(),
+                '_serialize' => ['error']
+            ]);
+        }
+    }
+
 
     /**
      * Edit method
