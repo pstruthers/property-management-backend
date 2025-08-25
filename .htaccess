@@ -5,8 +5,18 @@
 #</IfModule>
 
 <IfModule mod_rewrite.c>
-    RewriteEngine on
-    RewriteRule    ^(\.well-known/.*)$ $1 [L]
-    RewriteRule    ^$    webroot/    [L]
-    RewriteRule    (.*) webroot/$1    [L]
+    RewriteEngine On
+    RewriteBase /
+
+    # Allow access to .well-known for SSL
+    RewriteRule ^(\.well-known/.*)$ $1 [L]
+
+    # If a file or directory exists, serve it
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Otherwise, send everything to index.html
+    RewriteRule ^ webroot/index.html [L]
 </IfModule>
+
