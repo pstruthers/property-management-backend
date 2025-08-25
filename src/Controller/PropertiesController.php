@@ -91,9 +91,28 @@ class PropertiesController extends AppController
 
         // Attempt to save
         if ($this->Properties->save($property)) {
+            $scheme = $this->request->getUri()->getScheme(); // http or https
+            $host   = $this->request->getUri()->getHost();   // your backend domain
+            $port   = $this->request->getUri()->getPort();
+
+            $photoUrl = $property->photo
+                ? $scheme . '://' . $host . ($port ? ":$port" : "") . '/uploads/' . $property->photo
+                : null;
+
             $response = [
                 'success'  => true,
-                'property' => $property
+                'property' => [
+                    'id'        => $property->id,
+                    'address'   => $property->address,
+                    'city'      => $property->city,
+                    'state'     => $property->state,
+                    'zip'       => $property->zip,
+                    'beds'      => $property->beds,
+                    'baths'     => $property->baths,
+                    'sqft'      => $property->sqft,
+                    'price'     => $property->price,
+                    'photo' => $photoUrl,
+                ],
             ];
         } else {
             $errors = $property->getErrors();
@@ -102,6 +121,7 @@ class PropertiesController extends AppController
                 'errors'  => $errors
             ];
         }
+
 
         return $this->response
             ->withType('application/json')
