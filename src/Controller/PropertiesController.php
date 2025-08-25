@@ -18,17 +18,37 @@ class PropertiesController extends AppController
      */
     public function index()
     {
-        $this->request->allowMethod(['get']);
+        $properties = $this->Properties->find()->all();
 
-        $properties = $this->Properties->find()->toArray();
+        $scheme = $this->request->getUri()->getScheme();
+        $host   = $this->request->getUri()->getHost();
+        $port   = $this->request->getUri()->getPort();
 
-        // Return JSON response directly
-        $response = $this->response
+        $data = [];
+        foreach ($properties as $property) {
+            $photoUrl = $property->photo
+                ? $scheme . '://' . $host . ($port ? ":$port" : "") . '/uploads/' . $property->photo
+                : null;
+
+            $data[] = [
+                'id'      => $property->id,
+                'address' => $property->address,
+                'city'    => $property->city,
+                'state'   => $property->state,
+                'zip'     => $property->zip,
+                'beds'    => $property->beds,
+                'baths'   => $property->baths,
+                'sqft'    => $property->sqft,
+                'price'   => $property->price,
+                'photo'   => $photoUrl,
+            ];
+        }
+
+        return $this->response
             ->withType('application/json')
-            ->withStringBody(json_encode($properties));
-
-        return $response;
+            ->withStringBody(json_encode($data));
     }
+
 
 
     /**
