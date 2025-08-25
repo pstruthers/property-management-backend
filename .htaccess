@@ -1,7 +1,11 @@
 # Uncomment the following to prevent the httpoxy vulnerability
+
 # See: https://httpoxy.org/
+
 #<IfModule mod_headers.c>
-#    RequestHeader unset Proxy
+
+# RequestHeader unset Proxy
+
 #</IfModule>
 
 <IfModule mod_rewrite.c>
@@ -11,12 +15,12 @@
     # Allow access to .well-known for SSL
     RewriteRule ^(\.well-known/.*)$ $1 [L]
 
-    # If a file or directory exists, serve it
+    # If a file or directory exists, serve it directly
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
-    # Otherwise, send everything to index.html
-    RewriteRule ^ webroot/index.html [L]
-</IfModule>
+    # Otherwise, send everything to index.php
+    RewriteRule ^ index.php [L]
 
+</IfModule>
