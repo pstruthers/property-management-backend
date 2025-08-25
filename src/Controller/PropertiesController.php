@@ -54,76 +54,51 @@ class PropertiesController extends AppController
         $this->request->allowMethod(['post']);
         $this->viewBuilder()->disableAutoLayout();
         $this->viewBuilder()->setClassName('Json');
-        $property = $this->Properties->newEmptyEntity();
-
-        $photo = $this->request->getData('photo');
-        if ($photo && $photo->getClientFilename()) {
-            $filename = uniqid() . '_' . $photo->getClientFilename();
-            $targetPath = WWW_ROOT . 'uploads' . DS . $filename;
-            $photo->moveTo($targetPath);
-            $property->photo = $filename;
-        }
-
-        $addressData = $this->request->getData('address');
-        $property->address = $addressData['address'] ?? '';
-        $property->city = $addressData['city'] ?? '';
-        $property->state = $addressData['state'] ?? '';
-        $property->zip = $addressData['zip'] ?? '';
-
-        $property->beds = $this->request->getData('beds');
-        $property->baths = $this->request->getData('baths');
-        $property->sqft = $this->request->getData('sqft');
-        $property->price = $this->request->getData('price');
-
-        if ($this->Properties->save($property)) {
-            $response = [
-                'success' => true,
-                'property' => $property
-            ];
-        } else {
-            $response = ['success' => false];
-        }
-
-        // Return JSON response directly
-        $this->response = $this->response
-            ->withType('application/json')
-            ->withStringBody(json_encode($response));
-
-        return $this->response;
-    }
-
-    public function testDb()
-    {
-        $this->request->allowMethod(['get']);
-
-        // Disable normal template rendering
-        $this->viewBuilder()->disableAutoLayout();
-
-        // Use JsonView
-        $this->viewBuilder()->setClassName('Json');
 
         try {
-            $connection = $this->getTableLocator()->get('Properties')->getConnection();
-            $connection->execute('SELECT 1');
+            $property = $this->Properties->newEmptyEntity();
 
-            // Set variables for JSON output
-            $this->set([
-                'success' => true,
-                'error' => null,
-            ]);
+            $photo = $this->request->getData('photo');
+            if ($photo && $photo->getClientFilename()) {
+                // Temporarily store a placeholder to avoid container filesystem issues
+                //$filename = uniqid() . '_' . $photo->getClientFilename();
+                //$targetPath = WWW_ROOT . 'uploads' . DS . $filename;
+                //$photo->moveTo($targetPath);
+                $property->photo = 'placeholder.jpg';
+            }
 
-            // Explicitly serialize for JSON output
-            $this->viewBuilder()->setOption('serialize', ['success', 'error']);
+            $property->address = $this->request->getData('address') ?? '';
+            $property->city = $this->request->getData('city') ?? '';
+            $property->state = $this->request->getData('state') ?? '';
+            $property->zip = $this->request->getData('zip') ?? '';
+
+            $property->beds = $this->request->getData('beds');
+            $property->baths = $this->request->getData('baths');
+            $property->sqft = $this->request->getData('sqft');
+            $property->price = $this->request->getData('price');
+
+            if ($this->Properties->save($property)) {
+                $response = [
+                    'success' => true,
+                    'property' => $property
+                ];
+            } else {
+                $response = [
+                    'success' => false,
+                    'errors' => $property->getErrors()
+                ];
+            }
         } catch (\Exception $e) {
-            $this->set([
+            $response = [
                 'success' => false,
-                'error' => $e->getMessage(),
-            ]);
-            $this->viewBuilder()->setOption('serialize', ['success', 'error']);
+                'error' => $e->getMessage()
+            ];
         }
+
+        return $this->response
+            ->withType('application/json')
+            ->withStringBody(json_encode($response));
     }
-
-
 
 
     /**
