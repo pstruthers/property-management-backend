@@ -23,8 +23,8 @@ RUN a2enmod rewrite
 WORKDIR /var/www/html
 # Create uploads folder
 RUN mkdir -p /var/www/html/webroot/uploads \
-    && chown -R www-data:www-data /var/www/html/uploads \
-    && chmod -R 755 /var/www/html/uploads
+    && chown -R www-data:www-data /var/www/html/webroot/uploads \
+    && chmod -R 755 /var/www/html/webroot/uploads
 COPY . .
 COPY certs /var/www/html/certs
 
