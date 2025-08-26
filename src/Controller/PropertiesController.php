@@ -27,8 +27,12 @@ class PropertiesController extends AppController
         $data = [];
         foreach ($properties as $property) {
             $photoUrl = $property->photo
-                ? $scheme . '://' . $host . ($port ? ":$port" : "") . '/webroot/uploads/' . $property->photo
+                ? $this->request->getUri()->getScheme() . '://'
+                . $this->request->getUri()->getHost()
+                . ($this->request->getUri()->getPort() ? ':' . $this->request->getUri()->getPort() : '')
+                . '/uploads/' . $property->photo
                 : null;
+
 
             $data[] = [
                 'id'      => $property->id,

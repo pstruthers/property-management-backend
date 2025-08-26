@@ -7,12 +7,16 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    RewriteCond %{REQUEST_URI} ^/uploads/
+    RewriteRule ^uploads/(.*)$ webroot/uploads/$1 [L]
+
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
 
     RewriteRule ^(.*)$ webroot/index.php [L]
 </IfModule>
+
 
 
 
