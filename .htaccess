@@ -7,15 +7,15 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    RewriteCond %{REQUEST_URI} ^/uploads/
-    RewriteRule ^uploads/(.*)$ webroot/uploads/$1 [L]
+    # Serve existing files in webroot directly
+    RewriteCond %{DOCUMENT_ROOT}/webroot/%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}/webroot/%{REQUEST_URI} -d
+    RewriteRule ^(.*)$ webroot/$1 [L]
 
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^ - [L]
-
+    # Route everything else to webroot/index.php
     RewriteRule ^(.*)$ webroot/index.php [L]
 </IfModule>
+
 
 
 
