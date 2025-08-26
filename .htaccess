@@ -5,12 +5,14 @@
 #</IfModule>
 
 <IfModule mod_rewrite.c>
-    RewriteEngine on
+    RewriteEngine On
 
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
 
-    RewriteRule ^(.*)$ webroot/$1 [L]
+    RewriteRule ^(.*)$ webroot/index.php [L]
 </IfModule>
+
 
 
