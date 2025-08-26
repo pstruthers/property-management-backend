@@ -17,41 +17,37 @@ class PropertiesController extends AppController
      * @return \Cake\Http\Response|null|void Renders view
      */
     public function index()
-    {
-        $properties = $this->Properties->find()->all();
+{
+    $properties = $this->Properties->find()->all();
 
-        $scheme = $this->request->getUri()->getScheme();
-        $host   = $this->request->getUri()->getHost();
-        $port   = $this->request->getUri()->getPort();
+    $scheme = $this->request->getUri()->getScheme();
+    $host   = $this->request->getUri()->getHost();
+    $port   = $this->request->getUri()->getPort();
 
-        $data = [];
-        foreach ($properties as $property) {
-            $photoUrl = $property->photo
-                ? $scheme . '://'
-                . $host
-                . '/uploads/' . $property->photo
-                : null;
+    $data = [];
+    foreach ($properties as $property) {
+        $photoUrl = $property->photo
+            ? $scheme . '://' . $host . ($port ? ":$port" : "") . '/uploads/' . $property->photo
+            : null;
 
-
-
-            $data[] = [
-                'id'      => $property->id,
-                'address' => $property->address,
-                'city'    => $property->city,
-                'state'   => $property->state,
-                'zip'     => $property->zip,
-                'beds'    => $property->beds,
-                'baths'   => $property->baths,
-                'sqft'    => $property->sqft,
-                'price'   => $property->price,
-                'photo'   => $photoUrl,
-            ];
-        }
-
-        return $this->response
-            ->withType('application/json')
-            ->withStringBody(json_encode($data));
+        $data[] = [
+            'id'      => $property->id,
+            'address' => $property->address,
+            'city'    => $property->city,
+            'state'   => $property->state,
+            'zip'     => $property->zip,
+            'beds'    => $property->beds,
+            'baths'   => $property->baths,
+            'sqft'    => $property->sqft,
+            'price'   => $property->price,
+            'photo'   => $photoUrl,
+        ];
     }
+
+    return $this->response
+        ->withType('application/json')
+        ->withStringBody(json_encode($data));
+}
 
 
 

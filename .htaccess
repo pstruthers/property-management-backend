@@ -5,18 +5,8 @@
 #</IfModule>
 
 <IfModule mod_rewrite.c>
-    RewriteEngine On
-
-    # Serve existing files in webroot directly
-    RewriteCond %{DOCUMENT_ROOT}/webroot/%{REQUEST_URI} -f [OR]
-    RewriteCond %{DOCUMENT_ROOT}/webroot/%{REQUEST_URI} -d
-    RewriteRule ^(.*)$ webroot/$1 [L]
-
-    # Route everything else to webroot/index.php
-    RewriteRule ^(.*)$ webroot/index.php [L]
+    RewriteEngine on
+    RewriteRule ^$ webroot/ [L]
+    RewriteRule (.*) webroot/$1 [L]
 </IfModule>
-
-
-
-
 
