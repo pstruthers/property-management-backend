@@ -19,10 +19,6 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache mod_rewrite for CakePHP
 RUN a2enmod rewrite
 
-# Set Apache DocumentRoot to webroot
-RUN sed -i 's|/var/www/html|/var/www/html/webroot|g' /etc/apache2/sites-available/000-default.conf \
-    && sed -i 's|/var/www/html|/var/www/html/webroot|g' /etc/apache2/apache2.conf
-
 # Copy project files
 WORKDIR /var/www/html
 # Create uploads folder
